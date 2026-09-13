@@ -1,2 +1,28 @@
-This is a project to demonstrate using AI to extract required data from user query and perform a search in geospacial data (OpenStreetMap) to return results.
-It is a simple project - it uses Streamlit and the map embedded in Streamlit, plus Google Maps links are generated for the search location and each result returned.
+#GeoSpatialTest
+
+Small Python project demonstrating geospatial data processing using GeoPandas and Shapely.
+
+##Features
+
+* Load GeoJSON/OpenStreetMap data.
+* Perform spatial filtering.
+* Buffer, intersection and distance calculations.
+* Visualize results on an interactive Folium map.
+
+##Technology Stack
+
+* Python 3.12
+* *eoPandas
+* Shapely
+* Folium
+* OpenStreetMap / GeoJSON
+
+##Example Output
+
+(screenshot of generated map)
+
+##Future Improvements
+
+* FastAPI endpoint.
+* LLM interface.
+* Agentic workflow.
