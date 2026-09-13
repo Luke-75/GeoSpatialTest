@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field, field_validator
 from openai import OpenAI
 import json
 import os
+from pathlib import Path
 import streamlit as st
 
 results_max = 10
@@ -35,10 +36,20 @@ def parse_search_query(user_input: str) -> SearchRequest:
     {user_input}
     """
 
-    #openai_api_key = os.getenv("OPENAI_API_KEY")
-    openai_api_key="***REMOVED-OPENAI-API-KEY***"
-    oai_client = OpenAI(api_key=openai_api_key)
+    from dotenv import load_dotenv
+
+    env_path = Path("Documents/GITHub/GeoSpatialTest/secret-config/.env")
+
+    if env_path.exists():
+        print("✅ File .env successfuly located.")
+    else:
+        print(f"❌ File NOT found on adress: {env_path.resolve()}")
+
+    load_dotenv(dotenv_path=env_path)
+    openai_api_key = os.getenv("OPENAI_API_KEY")
     #print("API key: " + openai_api_key)
+
+    oai_client = OpenAI(api_key=openai_api_key)
 
     response = oai_client.chat.completions.create(
         #model = "gpt-4",
