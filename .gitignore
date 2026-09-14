@@ -1,1 +1,18 @@
+#directory containing the actual .env file
 secret-config/
+
+# Secrets
+.env
+
+# Virtual environments
+.venv/
+venv/
+testenv/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# IDE
+.vscode/
+.idea/
