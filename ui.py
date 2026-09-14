@@ -1,4 +1,4 @@
-#utils.py
+#ui.py
 
 import streamlit as st
 import pandas as pd
@@ -6,6 +6,12 @@ import geopandas as gpd
 import re
 from geo import format_distance
 from pyproj import Transformer
+import folium
+from streamlit_folium import st_folium
+
+fmap: folium.map
+dataframe: pd.DataFrame
+
 
 def remove_extra_spaces(text: str) -> str:
     """
@@ -21,13 +27,11 @@ def remove_extra_spaces(text: str) -> str:
     # Strip leading/trailing spaces
     return cleaned_text.strip()
 
-def draw_map(coords_wgs84: list[dict]):
+#def draw_map(coords_wgs84: list[dict]):
+def draw_map(data_frame: pd.DataFrame):
     st.subheader("Map")
 
-    #st.map(
-    #    coords_wgs84[["lat", "lon"]]
-    #)
-
+    """
     st.map(
             coords_wgs84,
             latitude="lat",
@@ -35,38 +39,51 @@ def draw_map(coords_wgs84: list[dict]):
             color="color",
             size=120,
         )
+    """
+
+    with st.container(border=True):
+
+        global fmap
+        global dataframe
+        # Create map centered on searched location (first point in the dataframe)
+        fmap = folium.Map(
+            location=[data_frame.loc[0]['lat'], data_frame.loc[0]['lon']],
+            tiles="OpenStreetMap", 
+            zoom_start=14
+        )
+
+        #add markers fo reach dataframe row
+        for i in range(0,len(data_frame)):
+            folium.Marker(
+                location=[data_frame.iloc[i]['lat'], data_frame.iloc[i]['lon']],
+                popup=data_frame.iloc[i]['name'],
+                tooltip=data_frame.iloc[i]['name'],
+                icon=folium.Icon(icon="star",color=data_frame.iloc[i]['icon_color']),
+            ).add_to(fmap)
+
+        # Display the stored map
+        map_data = st_folium(
+            fmap,
+            width=700, 
+            height=500,
+            returned_objects=[]
+        )
+
+
 
 def display_search_results(srch_results: list[dict], srch_lat, srch_lon):
     #raw geo data for debugging
     #st.write(srch_results)
 
-    colors = [
-        "#e6194b",
-        "#3cb44b",
-        "#4363d8",
-        "#f58231",
-        "#911eb4",
-        "#42d4f4",
-        "#f032e6",
-        "#bfef45",
-        "#fabed4",
-        "#469990",
-    ]
-
-    types = [
-        "Station 1",
-        "Station 2",
-        "Station 3",
-        "Station 4",
-        "Station 5",
-        "Station 6",
-        "Station 7",
-        "Station 8",
-        "Station 9",
-        "Station 10",
-    ]
-
     st.write(f"Location in a map: https://www.google.com/maps?ll={srch_lat},{srch_lon};")
+
+    global dataframe
+    dataframe = pd.DataFrame({
+        'lat':[srch_lat],
+        'lon':[srch_lon],
+        'name':['Search Location'],
+        'icon_color':['green']
+    }, dtype=str)
     
     for i, station in srch_results.iterrows():
 
@@ -110,39 +127,14 @@ def display_search_results(srch_results: list[dict], srch_lat, srch_lon):
     
             if station.get("address"):
                 st.write(f"**Address:** {station['address']}")
-    
-            # coordinates to show on map
-            nearest_wgs84 = srch_results.to_crs(epsg=4326)
-    
-            nearest_wgs84["point"] = nearest_wgs84.geometry.representative_point()
-            nearest_wgs84["lat"] = nearest_wgs84["point"].y
-            nearest_wgs84["lon"] = nearest_wgs84["point"].x
+
+            #add a new row to the dataframe using loc[]
+            #attributes: [latitude, longitude, name, icon_color]
+            dataframe.loc[len(dataframe)] = [loc_y, loc_x, name, 'blue']
 
             st.write(f"https://www.google.com/maps?ll={loc_y},{loc_x};")
            
-    
-    # visualize the search center point
-    search_center = pd.DataFrame({
-        "lat": [srch_lat],
-        "lon": [srch_lon],
-        "type": ["Search location"],
-        "color": ["#11EAE0"],
-    })
-
-    nearest_wgs84["color"] = colors[:len(nearest_wgs84)]
-    nearest_wgs84["type"] = types[:len(nearest_wgs84)]
-    
-    
-    # concatenate results coordinates with the search center
-    map_data = pd.concat(
-        [
-            search_center,
-            nearest_wgs84[["lat", "lon", "type", "color"]],
-        ],
-        ignore_index=True,
-    )
-    
     # show search center and search results on map
     #draw_map(nearest_wgs84)
-    draw_map(map_data)
+    draw_map(dataframe)
 

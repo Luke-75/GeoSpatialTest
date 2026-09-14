@@ -12,8 +12,7 @@ Small Python project demonstrating geospatial data processing using GeoPandas an
 ##Technology Stack
 
 * Python 3.12
-* *eoPandas
-* Shapely
+* GeoPandas
 * Folium
 * OpenStreetMap / GeoJSON
 
