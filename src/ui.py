@@ -4,7 +4,7 @@ import streamlit as st
 import pandas as pd
 import geopandas as gpd
 import re
-from geo import format_distance
+from src.geo import format_distance
 from pyproj import Transformer
 import folium
 from streamlit_folium import st_folium

@@ -1,9 +1,9 @@
 import streamlit as st
 import pandas as pd
 
-from geo import geocode, query_petrol_stations, find_nearest_stations
-from ai import SearchRequest, parse_search_query
-from ui import remove_extra_spaces, draw_map, display_search_results
+from src.geo import geocode, query_petrol_stations, find_nearest_stations
+from src.ai import SearchRequest, parse_search_query
+from src.ui import remove_extra_spaces, draw_map, display_search_results
 from pydantic import ValidationError
 
 

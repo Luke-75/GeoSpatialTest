@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field, field_validator
 #import openai
 from openai import OpenAI
 import json
+from dotenv import load_dotenv
 import os
 from pathlib import Path
 import streamlit as st
@@ -36,9 +37,9 @@ def parse_search_query(user_input: str) -> SearchRequest:
     {user_input}
     """
 
-    from dotenv import load_dotenv
-
-    env_path = Path("Documents/GITHub/GeoSpatialTest/secret-config/.env")
+    project_root = Path(__file__).resolve().parent.parent
+    env_path = project_root / "secret-config" / ".env"
+    #env_path = Path("Documents/GITHub/GeoSpatialTest/secret-config/.env")
 
     if env_path.exists():
         print("✅ File .env successfuly located.")
@@ -47,6 +48,8 @@ def parse_search_query(user_input: str) -> SearchRequest:
 
     load_dotenv(dotenv_path=env_path)
     openai_api_key = os.getenv("OPENAI_API_KEY")
+    if not openai_api_key:
+        raise RuntimeError("OPENAI_API_KEY is not configured.")
     #print("API key: " + openai_api_key)
 
     oai_client = OpenAI(api_key=openai_api_key)
@@ -69,11 +72,16 @@ def parse_search_query(user_input: str) -> SearchRequest:
         # debug
         #st.write(search_request)
 
-        st.write(f"""Performing search:\n\n
-        Location: {search_request.location} ({location_map_url})\n
-        Results to return (max {results_max}, default {results_default}): {search_request.limit}\n
-        Distance from Location (max {distance_max} km, default {distance_default} km): {search_request.radius_km} km\n
-        """)
+        #st.write(f"""Performing search:\n\n
+        #Location: {search_request.location} ({location_map_url})\n
+        #Results to return (max {results_max}, default {results_default}): {search_request.limit}\n
+        #Distance from Location (max {distance_max} km, default {distance_default} km): {search_request.radius_km} km\n
+        #""")
+
+        with st.expander("Search details"):
+            st.write(f"Location: {search_request.location}")
+            st.write(f"Results (max {results_max}, default {results_default}): {search_request.limit}")
+            st.write(f"Radius (max {distance_max} km, default {distance_default} km): {search_request.radius_km} km")
 
         return search_request
     except Exception as e:
