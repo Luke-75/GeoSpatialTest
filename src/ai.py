@@ -17,10 +17,16 @@ location_map_url = ""
 
 
 class SearchRequest(BaseModel):
-    location: str
-    limit: int = Field(default=results_default, gt=0, le=results_max, description="How many gas stations to find - upper limit prevents app misusing.")
-    radius_km: float = Field(default=distance_default, le=distance_max, description="in what distance from the location to search")
-
+    location: str = Field(min_length=1, description="Location from which to search for nearby petrol stations.")
+    limit: int = Field(default=results_default, gt=0, le=results_max, description="Maximum number of petrol stations to return.")
+    radius_km: float = Field(default=distance_default, gt=0, le=distance_max, description="Search radius around the location, in kilometers.")
+    @field_validator("location")
+    @classmethod
+    def validate_location(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("Location must not be empty.")
+        return value
     
 
 def parse_search_query(user_input: str) -> SearchRequest:
