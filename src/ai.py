@@ -31,13 +31,28 @@ class SearchRequest(BaseModel):
 
 def parse_search_query(user_input: str) -> SearchRequest:
     prompt = f"""
-    You are an AI agent specialized in extracting data from user requests for geospatial data searches.
-    You have to extract the following fields from the user query, or use the default values, if not specified explicitly:
-    - location (address of a point of search - geospatial point, in relation to wich a search in geospatial data is performed. This should typically be the only address mentioned in the request. Try to remove words like 'ulice' or 'street', so the result could be used for search directly.) 
-    - limit (how many results will be returned - relates to the amount mentioned in the query. Should be in range of 1 to {results_max} to prevent excessive queries, the default value is {results_default}, if not specified otherwise by the user) 
-    - radius_km (how far from the search center the search in geospatial data is performed - relates to the distance mentioned in the query. The value should be less or equal to {distance_max} km, to prevent excessive queries, the default value is {distance_default} km, if not specified otherwise by the user) 
-    
-    Provide results in the JSON format.
+    You extract structured parameters from natural-language requests for geospatial searches.
+
+    Extract the following fields:
+
+    - location:
+    The location used as the center of the geospatial search. Return only the address/location itself, without surrounding phrases such as "street", "ulice", "near", or "around".
+
+    - limit:
+    Number of results to return.
+    Default: {results_default}
+    Minimum: 1
+    Maximum: {results_max}
+    If the requested value exceeds the maximum, use {results_max}.
+
+    - radius_km:
+    Search radius in kilometers.
+    Default: {distance_default}
+    Must be greater than 0.
+    Maximum: {distance_max}
+    If the requested value exceeds the maximum, use {distance_max}.
+
+    Return the extracted parameters as JSON.
 
     User query:
     {user_input}
@@ -45,13 +60,14 @@ def parse_search_query(user_input: str) -> SearchRequest:
 
     project_root = Path(__file__).resolve().parent.parent
     env_path = project_root / "secret-config" / ".env"
-    #env_path = Path("Documents/GITHub/GeoSpatialTest/secret-config/.env")
 
+    """
     if env_path.exists():
         print("✅ File .env successfuly located.")
     else:
         print(f"❌ File NOT found on adress: {env_path.resolve()}")
-
+    """
+    
     load_dotenv(dotenv_path=env_path)
     openai_api_key = os.getenv("OPENAI_API_KEY")
     if not openai_api_key:
@@ -77,12 +93,6 @@ def parse_search_query(user_input: str) -> SearchRequest:
 
         # debug
         #st.write(search_request)
-
-        #st.write(f"""Performing search:\n\n
-        #Location: {search_request.location} ({location_map_url})\n
-        #Results to return (max {results_max}, default {results_default}): {search_request.limit}\n
-        #Distance from Location (max {distance_max} km, default {distance_default} km): {search_request.radius_km} km\n
-        #""")
 
         with st.expander("Search details"):
             st.write(f"Location: {search_request.location}")

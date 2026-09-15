@@ -1,6 +1,10 @@
 # GeoSpatialTest
 
-Small Python project demonstrating geospatial data processing using GeoPandas and Shapely. It utilizes OpenAI to extract parameters for geospatial search (search location, search radius and max number of results to be returned) from user input. User can either input just address (location), or use a natural language query. Default values are added to the search query, if missing, and maximum values are enforced in case the parameters entered exceed limits. Search location, search area (circle) and search results are visualised in Folium map.
+A small Python application demonstrating AI-assisted geospatial search using GeoPandas, Shapely and OpenStreetMap data.  
+  
+The application uses an OpenAI model to convert natural-language input into structured search parameters: location, search radius and maximum number of results. If the requested result count or search radius exceeds the configured maximum, the LLM is instructed to reduce it to the maximum allowed value. The resulting parameters are then validated by Pydantic before the geospatial search is executed.  
+
+Users can either enter an address directly or describe the search in natural language. Results are ranked by distance and displayed both as a list and on an interactive Folium map, including the search location and search-radius boundary.  
 
 ## Features
 
@@ -18,9 +22,11 @@ Small Python project demonstrating geospatial data processing using GeoPandas an
                 ↓  
         OpenAI / LLM  
                 ↓  
-        SearchRequest (Pydantic)  
+        Structured parameters  
                 ↓  
-        Geospatial search  
+        SearchRequest (Pydantic validation)  
+                ↓  
+        Deterministic geospatial search  
                 ↓  
         Distance filtering and ranking  
                 ↓  
@@ -35,118 +41,122 @@ Small Python project demonstrating geospatial data processing using GeoPandas an
             geo.py  
             ui.py  
 
-ai.py  : extraction of search parameters from user query in Natural language and returning them via SearchRequest  
-geo.py : performs Geospatial search based on parameters retrieved in SearchRequest from ai.py  
-ui.py  : UI related procedures, presentation of search results (list of objects retrieved, Folium map)  
+**geospatialtest.py** — Main Streamlit application and workflow orchestration.  
+**ai.py** — Converts natural-language input into a validated `SearchRequest`.  
+**geo.py** — Performs geocoding, geospatial search, distance calculation, filtering and ranking.  
+**ui.py** — Presents search results and builds the interactive Folium map.  
 
-
+ 
 ## Example
 
 Example natural-language request:  
 
-"Find the 4 nearest gas stations within 10 km of Svatoplukova, Prague."
+"Find the 4 nearest gas stations within 10 km of Svatoplukova, Prague."  
 
-- The user query in natural language is passed to AI (ai.py)
-- AI extracts the following parameters for geospatial search from the query:
-    - location: Svatoplukova, Prague
-        - validation is performed, empty strings are not allowed
-    - limit: 4 
-        - in case user query does not contain number of objects to be retrieved, default value is used: 3
-        - in case user enters number higher than the maximum value (10), the maximum value is used
-    - radius_km: 10
-        - in case user query does not contain search radius, default value is used: 5.0
-        - in case user enters number higher than the maximum value (50), the maximum value is used
-- AI returns the search parameters as a SearchRequest data type
-- geospatial search is executed (geo.py) using the search parameters received, all results are returned as a list
-- returned list is sorted based on a distance from the search location (geo.py), 
-  4 results nearest to the search location are returned as a list
-- details of the 4 results returned are displayed in UI (ui.py)
-- Folium map with the Search location, search radius circle and the 4 results is displayed (ui.py)
+- The natural-language query is passed to the LLM (`ai.py`).
+- The LLM extracts and normalizes the parameters required for the geospatial search:
+    - `location`: `Svatoplukova, Prague`
+        - Empty locations are rejected by validation.
+    - `limit`: `4`
+        - Default: `3`
+        - Maximum: `10`
+        - Values above the maximum are reduced to `10` by the LLM.
+    - `radius_km`: `10`
+        - Default: `5.0`
+        - Maximum: `50`
+        - Values above the maximum are reduced to `50` by the LLM.
+- The structured parameters are parsed and validated as a Pydantic `SearchRequest`.
+- The validated parameters are passed to the deterministic geospatial search (`geo.py`).
+- Results are sorted by distance from the search location and limited to the requested number.
+- Result details are displayed in the Streamlit UI (`ui.py`).
+- The search location, search-radius boundary and returned petrol stations are displayed on an interactive Folium map (`ui.py`).
 
 ## Screenshots
 
-Home screen  
 ![GeoSpatialTest - Home screen](screenshots/GeoSpatialTest-01-home-screen.png?raw=true "GeoSpatialTest - Home screen")  
+Home screen  
 
-Home screen with search help expanded  
 ![GeoSpatialTest - Home screen with search help expanded](screenshots/GeoSpatialTest-02-home-screen-search-instructions-expanded.png?raw=true "GeoSpatialTest - Home screen with search help expanded")  
+Home screen with search help expanded  
 
-User query in natural languge  
-![GeoSpatialTest - User query in natural languge](screenshots/GeoSpatialTest-03-user-query-in-natural-language.png?raw=true "GeoSpatialTest - User query in natural languge")  
+![GeoSpatialTest - User query in natural language](screenshots/GeoSpatialTest-03-user-query-in-natural-language.png?raw=true "GeoSpatialTest - User query in natural language")  
+User query in natural language  
 
-
+![GeoSpatialTest - User query processed by AI - expanded section with search parameters](screenshots/GeoSpatialTest-04-expanded-section-with-search-query-details.png?raw=true "GeoSpatialTest - User query processed by AI - expanded section with search parameters")  
 User query processed by AI - expanded section with search parameters  
-![GeoSpatialTest - User query processed by AI - expanded section with search parameters](screenshots/GeoSpatialTest-04-expanded-setion-with-search-query-details.png?raw=true "GeoSpatialTest - User query processed by AI - expanded section with search parameters")  
 
-Search results in a list  
 ![GeoSpatialTest - Search results in a list](screenshots/GeoSpatialTest-05-search-results-list.png?raw=true "GeoSpatialTest - Search results in a list")  
+Search results in a list  
 
-Search results in a map  
 ![GeoSpatialTest - Search results in a map](screenshots/GeoSpatialTest-06-search-results-map.png?raw=true "GeoSpatialTest - Search results in a map")  
+Search results in a map  
 
-Search results in a map - detail of Search radius  
 ![GeoSpatialTest - Search results in a map - detail of Search radius](screenshots/GeoSpatialTest-07-search-results-map-search-radius.png?raw=true "GeoSpatialTest - Search results in a map - detail of Search radius")  
+Search results in a map - detail of Search radius  
 
-Search results in a map - detail of Search location  
 ![GeoSpatialTest - Search results in a map - detail of Search location](screenshots/GeoSpatialTest-08-search-results-map-search-location.png?raw=true "GeoSpatialTest - Search results in a map - detail of Search location")  
+Search results in a map - detail of Search location  
 
-Search results in a map - detail of Search result  
 ![GeoSpatialTest - Search results in a map - detail of Search result](screenshots/GeoSpatialTest-09-search-results-map-search-result-detail.png?raw=true "GeoSpatialTest - Search results in a map - detail of Search result")  
+Search results in a map - detail of Search result  
 
 
 ## Technology Stack
 
-- Python
-- Streamlit
-- OpenAI
-- Pydantic
-- OSMnx,
-- GeoPandas
-- Shapely
-- pyproj
-- Folium
-- GeoPy
+- **Python** — application language
+- **Streamlit** — web UI
+- **OpenAI API** — natural-language query interpretation
+- **Pydantic** — structured data validation
+- **OSMnx / OpenStreetMap** — geospatial data retrieval
+- **GeoPandas / Shapely / pyproj** — geospatial processing
+- **GeoPy** — geocoding and distance utilities
+- **Folium** — interactive map visualization
 
 ## Installation
 
-git clone ...  
-python -m venv .venv  
-pip install -r requirements.txt  
+The following example uses Windows:  
+
+        git clone https://github.com/Luke-75/GeoSpatialTest.git
+        cd GeoSpatialTest
+
+        python -m venv .venv
+        .venv\Scripts\activate
+
+        pip install -r requirements.txt 
 
 ## Configuration
 
-To be able to use OpenAI API, API subscription must be paid. OpenAI does not offer a free subscription. The API subscription is independent on a ChatGPT subscription, and even the credit card details are not shared between those 2 subscriptions. The minimal subscription price is $5, and if you do not want to be charged automatically after you use all API tokens, you have to explicitly uncheck this option. OpenAI API subscription page: https://developers.openai.com/api/docs  
-  
+### OpenAI API
 
-OpenAI API key has to be stored secretly outside the program code and not synchronizet to GITHub. I have used the following proocedure to keep my API key safe:  
-- folder "secret-config" created in the project folder
-- the folder "secret-config" has been excluded from GITHub synchronization (folder name added to the .gitignore file)
-- environment file (.env) has been created in the "secret-config" folder
-- the following code is used to read the API jey from the .env file located in the "secret-config" folder
+The application requires an OpenAI API key.
 
-        from dotenv import load_dotenv
+- Create an API key in your OpenAI Platform account (https://platform.openai.com/api-keys).
+- Create a `secret-config` directory in the project root.
+- Copy `.env.example` to `secret-config/.env`.
+- Add your API key to the `.env` file:
 
-        project_root = Path(__file__).resolve().parent.parent
-        env_path = project_root / "secret-config" / ".env"
+        OPENAI_API_KEY=your_openai_api_key_here
+
+The `secret-config` directory is excluded from version control through `.gitignore`. Never commit API keys or other credentials to the repository.
         
-        load_dotenv(dotenv_path=env_path)
-        openai_api_key = os.getenv("OPENAI_API_KEY")
-        if not openai_api_key:
-            raise RuntimeError("OPENAI_API_KEY is not configured.")
-        
-- example of the environment file (.env.example) with a dummy API key has been created in the project folder
+### Nominatim User Agent
 
+The application uses the Nominatim geocoding service. Configure a descriptive user-agent name in `secret-config/.env`:  
+
+        NOMINATIM_USER_AGENT_NAME=your_application_name
 
 ## Running the Application
 
-streamlit run geospatialtest.py
+        streamlit run geospatialtest.py
 
 ## Current Scope / Future Development
 
-The application lets user to either enter just a search address (eg. "Svatoplukova, Prague", or "Svatoplukova 25, Prague" - in this case the default values for the search radius and the number of search results are used), or to submit a search query in a natural language, eg. "Find the 4 nearest gas stations within 10 km of Svatoplukova, Prague.". Parameters required for geospatial search are extracted from The user input by AI. Geospatial search is performed and the search results are shown as a list and in a Folium map. 
+The current application focuses on finding nearby petrol stations from either a direct location or a natural-language query.  
 
-Ideas for future improvements:  
+Possible future improvements include:  
 
-- FastAPI endpoint
-- LLM interface
-- Agentic workflow
+- Generalizing the search from petrol stations to arbitrary points of interest
+- Supporting more complex spatial queries and relationships
+- Exposing geospatial search functionality through a FastAPI endpoint
+- Adding automated unit and integration tests
+- Extending the workflow toward agentic geospatial tasks

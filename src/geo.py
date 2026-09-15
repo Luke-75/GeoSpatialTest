@@ -1,9 +1,26 @@
 # geo.py
+from dotenv import load_dotenv
+import os
+from pathlib import Path
 
 def geocode(address: str) -> tuple[float, float]:
     from geopy.geocoders import Nominatim
 
-    user_agent_name = "LK_Demo_Test"
+    project_root = Path(__file__).resolve().parent.parent
+    env_path = project_root / "secret-config" / ".env"
+
+    """
+    if env_path.exists():
+        print("✅ File .env successfuly located.")
+    else:
+        print(f"❌ File NOT found on adress: {env_path.resolve()}")
+    """
+
+    load_dotenv(dotenv_path=env_path)
+    user_agent_name = os.getenv("NOMINATIM_USER_AGENT_NAME")
+    if not user_agent_name:
+            raise RuntimeError("Nominatim user agent name is not configured.")
+    
     geolocator = Nominatim(user_agent=user_agent_name)
     location = geolocator.geocode(
         query = address
