@@ -21,22 +21,24 @@ if st.button("Find stations") and ai_query:
     # for debug purposes
     #st.write(search_query)
 
-    lat, lon = geocode(search_query.location)
+    if search_query is not None:
 
-    stations = query_petrol_stations(lat, lon)
+        lat, lon = geocode(search_query.location)
+
+        stations = query_petrol_stations(lat, lon)
     
-    if stations.empty:
-        print("No results returned.")
-    else:
-        nearest = find_nearest_stations(
-            lat,
-            lon,
-            stations,
-            limit=search_query.limit,
-        )
+        if stations.empty:
+            print("No results returned.")
+        else:
+            nearest = find_nearest_stations(
+                lat,
+                lon,
+                stations,
+                limit=search_query.limit,
+            )
                 
-        #raw geo data for debugging
-        #st.write(search_query)
+            #raw geo data for debugging
+            #st.write(search_query)
                 
-        display_search_results(nearest, lat, lon, search_query.radius_km)
+            display_search_results(nearest, lat, lon, search_query.radius_km)
 
