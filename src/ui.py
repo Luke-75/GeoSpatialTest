@@ -28,7 +28,7 @@ def remove_extra_spaces(text: str) -> str:
     return cleaned_text.strip()
 
 #def draw_map(coords_wgs84: list[dict]):
-def draw_map(data_frame: pd.DataFrame):
+def draw_map(data_frame: pd.DataFrame, search_radius_km: float):
     st.subheader("Map")
 
     """
@@ -61,6 +61,26 @@ def draw_map(data_frame: pd.DataFrame):
                 icon=folium.Icon(icon="star",color=data_frame.iloc[i]['icon_color']),
             ).add_to(fmap)
 
+        circle_popup_text = f"search radius: {search_radius_km} km"
+        popup = folium.Popup(
+            html=f"<div style='white-space: nowrap;'>{circle_popup_text}</div>",
+            max_width=len(circle_popup_text) * 8  # Adjust width so it fits in one line
+        )
+
+        #search radius circle
+        # Draw a Circle (radius in meters)
+        folium.Circle(
+            location=[data_frame.loc[0]['lat'], data_frame.loc[0]['lon']],
+            radius=(search_radius_km * 1000),  # meters
+            color="green",
+            fill=False,
+            #fill_color="green",  
+            #fill_opacity=0.4,
+            #popup=f"search radius: {search_radius_km} km"
+            popup=popup
+        ).add_to(fmap)
+
+
         # Display the stored map
         map_data = st_folium(
             fmap,
@@ -71,7 +91,7 @@ def draw_map(data_frame: pd.DataFrame):
 
 
 
-def display_search_results(srch_results: list[dict], srch_lat, srch_lon):
+def display_search_results(srch_results: list[dict], srch_lat, srch_lon, search_radius_km: float):
     #raw geo data for debugging
     #st.write(srch_results)
 
@@ -136,5 +156,5 @@ def display_search_results(srch_results: list[dict], srch_lat, srch_lon):
            
     # show search center and search results on map
     #draw_map(nearest_wgs84)
-    draw_map(dataframe)
+    draw_map(dataframe, search_radius_km)
 

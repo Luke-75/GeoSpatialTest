@@ -38,5 +38,5 @@ if st.button("Find stations") and ai_query:
         #raw geo data for debugging
         #st.write(search_query)
                 
-        display_search_results(nearest, lat, lon)
+        display_search_results(nearest, lat, lon, search_query.radius_km)
 
