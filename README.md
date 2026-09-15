@@ -14,35 +14,35 @@ Small Python project demonstrating geospatial data processing using GeoPandas an
 
 ## How It Works
 
-Natural-language query
-        ↓
-OpenAI / LLM
-        ↓
-SearchRequest (Pydantic)
-        ↓
-Geospatial search
-        ↓
-Distance filtering and ranking
-        ↓
-Folium map + results
+Natural-language query  
+        ↓  
+OpenAI / LLM  
+        ↓  
+SearchRequest (Pydantic)  
+        ↓  
+Geospatial search  
+        ↓  
+Distance filtering and ranking  
+        ↓  
+Folium map + results  
 
 
 ## Architecture
 
-geospatialtest.py
-src/
-    ai.py
-    geo.py
-    ui.py
+geospatialtest.py  
+src/  
+    ai.py  
+    geo.py  
+    ui.py  
 
-ai.py : extraction of search parameters from user query in Natural language and returning them via SearchRequest
-geo.py: performs Geospatial search based on parameters retrieved in SearchRequest from ai.py
-ui.py: UI related procedures, presentation of search results (list of objects retrieved, Folium map)
+ai.py  : extraction of search parameters from user query in Natural language and returning them via SearchRequest  
+geo.py : performs Geospatial search based on parameters retrieved in SearchRequest from ai.py  
+ui.py  : UI related procedures, presentation of search results (list of objects retrieved, Folium map)  
 
 
 ## Example
 
-Example natural-language request:
+Example natural-language request:  
 
 "Find the 4 nearest gas stations within 10 km of Svatoplukova, Prague."
 
@@ -65,8 +65,34 @@ Example natural-language request:
 
 ## Screenshots
 
-GeoSpatialTest - Home screen
-![GeoSpatialTest - Home screen](screenshots/GeoSpatialTest-01-home-screen.png?raw=true "GeoSpatialTest - Home screen")
+Home screen
+![GeoSpatialTest - Home screen](screenshots/GeoSpatialTest-01-home-screen.png?raw=true "GeoSpatialTest - Home screen")  
+
+Home screen with search help expanded
+![GeoSpatialTest - Home screen with search help expanded](screenshots/GeoSpatialTest-02-home-screen-search-instructions-expanded.png?raw=true "GeoSpatialTest - Home screen with search help expanded")  
+
+User query in natural languge
+![GeoSpatialTest - User query in natural languge](screenshots/GeoSpatialTest-03-user-query-in-natural-language.png?raw=true "GeoSpatialTest - User query in natural languge")  
+
+
+User query processed by AI - expanded section with search parameters
+![GeoSpatialTest - User query processed by AI - expanded section with search parameters](screenshots/GeoSpatialTest-04-expanded-setion-with-search-query-details.png?raw=true "GeoSpatialTest - User query processed by AI - expanded section with search parameters")  
+
+Search results in a list
+![GeoSpatialTest - Search results in a list](screenshots/GeoSpatialTest-05-search-results-list.png?raw=true "GeoSpatialTest - Search results in a list")  
+
+Search results in a map
+![GeoSpatialTest - Search results in a map](screenshots/GeoSpatialTest-06-search-results-map.png?raw=true "GeoSpatialTest - Search results in a map")  
+
+Search results in a map - detail of Search radius
+![GeoSpatialTest - Search results in a map - detail of Search radius](screenshots/GeoSpatialTest-07-search-results-map-search-radius.png?raw=true "GeoSpatialTest - Search results in a map - detail of Search radius")  
+
+Search results in a map - detail of Search location
+![GeoSpatialTest - Search results in a map - detail of Search location](screenshots/GeoSpatialTest-08-search-results-map-search-location.png?raw=true "GeoSpatialTest - Search results in a map - detail of Search location")  
+
+Search results in a map - detail of Search result
+![GeoSpatialTest - Search results in a map - detail of Search result](screenshots/GeoSpatialTest-09-search-results-map-search-result-detail.png?raw=true "GeoSpatialTest - Search results in a map - detail of Search result")  
+
 
 ## Technology Stack
 
@@ -83,14 +109,33 @@ GeoSpatialTest - Home screen
 
 ## Installation
 
-git clone ...
-python -m venv .venv
-pip install -r requirements.txt
+git clone ...  
+python -m venv .venv  
+pip install -r requirements.txt  
 
 ## Configuration
 
-Explain OPENAI_API_KEY and .env.example.
-Never include the actual key.
+To be able to use OpenAI API, API subscription must be paid. OpenAI does not offer a free subscription. The API subscription is independent on a ChatGPT subscription, and even the credit card details are not shared between those 2 subscriptions. The minimal subscription price is $5, and if you do not want to be charged automatically after you use all API tokens, you have to explicitly uncheck this option. OpenAI API subscription page: https://developers.openai.com/api/docs  
+  
+
+OpenAI API key has to be stored secretly outside the program code and not synchronizet to GITHub. I have used the following proocedure to keep my API key safe:  
+- folder "secret-config" created in the project folder
+- the folder "secret-config" has been excluded from GITHub synchronization (folder name added to the .gitignore file)
+- environment file (.env) has been created in the "secret-config" folder
+- the following code is used to read the API jey from the .env file located in the "secret-config" folder
+
+        from dotenv import load_dotenv
+
+        project_root = Path(__file__).resolve().parent.parent
+        env_path = project_root / "secret-config" / ".env"
+        
+        load_dotenv(dotenv_path=env_path)
+        openai_api_key = os.getenv("OPENAI_API_KEY")
+        if not openai_api_key:
+            raise RuntimeError("OPENAI_API_KEY is not configured.")
+        
+- example of the environment file (.env.example) with a dummy API key has been created in the project folder
+
 
 ## Running the Application
 
@@ -98,9 +143,10 @@ streamlit run geospatialtest.py
 
 ## Current Scope / Future Development
 
-Short description of what the application currently does
-and possible extensions.
+The application lets user to either enter just a search address (eg. "Svatoplukova, Prague", or "Svatoplukova 25, Prague" - in this case the default values for the search radius and the number of search results are used), or to submit a search query in a natural language, eg. "Find the 4 nearest gas stations within 10 km of Svatoplukova, Prague.". Parameters required for geospatial search are extracted from The user input by AI. Geospatial search is performed and the search results are shown as a list and in a Folium map. 
 
-- FastAPI endpoint.
-- LLM interface.
-- Agentic workflow.
+Ideas for future improvements:  
+
+- FastAPI endpoint
+- LLM interface
+- Agentic workflow
