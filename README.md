@@ -14,26 +14,26 @@ Small Python project demonstrating geospatial data processing using GeoPandas an
 
 ## How It Works
 
-Natural-language query  
-        ↓  
-OpenAI / LLM  
-        ↓  
-SearchRequest (Pydantic)  
-        ↓  
-Geospatial search  
-        ↓  
-Distance filtering and ranking  
-        ↓  
-Folium map + results  
+        Natural-language query  
+                ↓  
+        OpenAI / LLM  
+                ↓  
+        SearchRequest (Pydantic)  
+                ↓  
+        Geospatial search  
+                ↓  
+        Distance filtering and ranking  
+                ↓  
+        Folium map + results  
 
 
 ## Architecture
 
-geospatialtest.py  
-src/  
-    ai.py  
-    geo.py  
-    ui.py  
+        geospatialtest.py  
+        src/  
+            ai.py  
+            geo.py  
+            ui.py  
 
 ai.py  : extraction of search parameters from user query in Natural language and returning them via SearchRequest  
 geo.py : performs Geospatial search based on parameters retrieved in SearchRequest from ai.py  
@@ -65,32 +65,32 @@ Example natural-language request:
 
 ## Screenshots
 
-Home screen
+Home screen  
 ![GeoSpatialTest - Home screen](screenshots/GeoSpatialTest-01-home-screen.png?raw=true "GeoSpatialTest - Home screen")  
 
-Home screen with search help expanded
+Home screen with search help expanded  
 ![GeoSpatialTest - Home screen with search help expanded](screenshots/GeoSpatialTest-02-home-screen-search-instructions-expanded.png?raw=true "GeoSpatialTest - Home screen with search help expanded")  
 
-User query in natural languge
+User query in natural languge  
 ![GeoSpatialTest - User query in natural languge](screenshots/GeoSpatialTest-03-user-query-in-natural-language.png?raw=true "GeoSpatialTest - User query in natural languge")  
 
 
-User query processed by AI - expanded section with search parameters
+User query processed by AI - expanded section with search parameters  
 ![GeoSpatialTest - User query processed by AI - expanded section with search parameters](screenshots/GeoSpatialTest-04-expanded-setion-with-search-query-details.png?raw=true "GeoSpatialTest - User query processed by AI - expanded section with search parameters")  
 
-Search results in a list
+Search results in a list  
 ![GeoSpatialTest - Search results in a list](screenshots/GeoSpatialTest-05-search-results-list.png?raw=true "GeoSpatialTest - Search results in a list")  
 
-Search results in a map
+Search results in a map  
 ![GeoSpatialTest - Search results in a map](screenshots/GeoSpatialTest-06-search-results-map.png?raw=true "GeoSpatialTest - Search results in a map")  
 
-Search results in a map - detail of Search radius
+Search results in a map - detail of Search radius  
 ![GeoSpatialTest - Search results in a map - detail of Search radius](screenshots/GeoSpatialTest-07-search-results-map-search-radius.png?raw=true "GeoSpatialTest - Search results in a map - detail of Search radius")  
 
-Search results in a map - detail of Search location
+Search results in a map - detail of Search location  
 ![GeoSpatialTest - Search results in a map - detail of Search location](screenshots/GeoSpatialTest-08-search-results-map-search-location.png?raw=true "GeoSpatialTest - Search results in a map - detail of Search location")  
 
-Search results in a map - detail of Search result
+Search results in a map - detail of Search result  
 ![GeoSpatialTest - Search results in a map - detail of Search result](screenshots/GeoSpatialTest-09-search-results-map-search-result-detail.png?raw=true "GeoSpatialTest - Search results in a map - detail of Search result")  
 
 
