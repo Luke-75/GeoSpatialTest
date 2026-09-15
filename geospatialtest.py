@@ -3,13 +3,13 @@ import pandas as pd
 
 from src.geo import geocode, query_petrol_stations, find_nearest_stations
 from src.ai import SearchRequest, parse_search_query
-from src.ui import remove_extra_spaces, draw_map, display_search_results
+from src.ui import display_search_instructions, remove_extra_spaces, draw_map, display_search_results
 from pydantic import ValidationError
 
 
-
-
 st.title("Nearest Petrol Stations")
+
+display_search_instructions()
 
 
 ai_query = st.text_input("Enter address or Type a query for AI", key="ai_query_textbox")

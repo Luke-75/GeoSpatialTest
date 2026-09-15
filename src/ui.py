@@ -12,6 +12,16 @@ from streamlit_folium import st_folium
 fmap: folium.map
 dataframe: pd.DataFrame
 
+def display_search_instructions():
+    with st.expander("How to search"):
+    #with st.container(border=True):
+        st.markdown(f"### How to search")
+        st.markdown(f"#### Option 1: Enter address")
+        st.write("Example: Na Bojisti, Praha")
+        st.write("Default values are used for number of results returned and search radius.")
+        st.markdown(f"#### Option 2: Write query in natural language")
+        st.write("Example: Find 4 nearest gas stations in area of 10km from the street Svatoplukova, Praha.")
+        st.write("Search parameters are extracted by AI. You can review the search query parameters in case of doubts.")
 
 def remove_extra_spaces(text: str) -> str:
     """
@@ -107,8 +117,12 @@ def display_search_results(srch_results: list[dict], srch_lat, srch_lon, search_
     
     for i, station in srch_results.iterrows():
 
-        name = station.get("name") or "Unnamed petrol station"
-        brand_name = station.get("brand") or "<Unknown brand>"
+        name = station.get("name") or "<Name not available>"
+        if name == "nan":
+            name = "<Name not available>"
+        brand_name = station.get("brand") or "<Brand not available>"
+        if brand_name == "nan":
+            brand_name = "<Brand not available>"
     
         address_city = str(station.get("addr:city") or "")
         if address_city == "nan":
