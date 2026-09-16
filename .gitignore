@@ -1,6 +1,9 @@
 #directory containing the actual .env file
 secret-config/
 
+#Python cache
+cache/
+
 # Secrets
 .env
 
