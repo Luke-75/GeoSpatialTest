@@ -112,7 +112,19 @@ def find_nearest_stations(
 
 
 def format_distance(distance_m):
+    """
     if distance_m < 1000:
         return f"{distance_m:.0f} m"
     return f"{distance_m / 1000:.1f} km"
+    """
+    rounded_m = round(distance_m)
 
+    if rounded_m < 1000:
+        return f"{rounded_m} m"
+
+    km = rounded_m / 1000
+
+    if km.is_integer():
+        return f"{km:.0f} km"
+
+    return f"{distance_m / 1000:.1f} km"
