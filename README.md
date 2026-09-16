@@ -149,6 +149,43 @@ The application uses the Nominatim geocoding service. Configure a descriptive us
 
         streamlit run geospatialtest.py
 
+## Testing
+
+Automated tests are implemented using `pytest`.  
+
+### `tests/test_search_request.py`
+
+Tests validate the structured search parameters produced by the application and the validation rules implemented with `Pydantic`.  
+
+Coverage includes:  
+
+- validation and normalization of the search location
+- default values for optional parameters
+- minimum and maximum result limits
+- minimum and maximum search radius
+- rejection of values outside the allowed ranges
+
+### `tests/test_geo.py`
+
+Tests cover the deterministic geospatial processing functions and interaction with the external OpenStreetMap service.  
+
+Coverage includes:  
+
+- distance formatting for metres and kilometres
+- selection and ordering of the nearest petrol stations
+- handling of empty geospatial search results
+- validation of invalid geographic coordinates
+- mocked OpenStreetMap queries using `unittest.mock`
+- handling of external OSM service failures
+
+External OSM requests are mocked during unit testing, making the tests repeatable and independent of network availability.  
+
+Run the complete test suite from the project root:  
+
+        pytest -v
+
+
+
 ## Current Scope / Future Development
 
 The current application focuses on finding nearby petrol stations from either a direct location or a natural-language query.  
@@ -158,5 +195,5 @@ Possible future improvements include:
 - Generalizing the search from petrol stations to arbitrary points of interest
 - Supporting more complex spatial queries and relationships
 - Exposing geospatial search functionality through a FastAPI endpoint
-- Adding automated unit and integration tests
+- Expanding automated test coverage and adding integration tests
 - Extending the workflow toward agentic geospatial tasks
